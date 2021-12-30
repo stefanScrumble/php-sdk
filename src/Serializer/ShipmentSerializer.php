@@ -106,7 +106,6 @@ class ShipmentSerializer implements SerializerInterface
         $shipment->setInvoiceReference($data['invoiceReference']);
         $shipment->setSequence($data['sequence']);
         $shipment->setStatus($data['status']);
-        $shipment->setRelated($data['related']);
 
         $items = [];
         foreach ($data['items'] as $item) {
