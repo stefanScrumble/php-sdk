@@ -7,6 +7,7 @@ use Boekuwzending\Resource\Contact;
 use Boekuwzending\Resource\DispatchInstruction;
 use Boekuwzending\Resource\Item;
 use Boekuwzending\Resource\Shipment;
+use Boekuwzending\Resource\DeliveryInstruction;
 use Boekuwzending\Serializer\ShipmentSerializer;
 use PHPUnit\Framework\TestCase;
 use Boekuwzending\Tests\FakerTrait;
@@ -15,7 +16,7 @@ class ShipmentSerializerTest extends TestCase
 {
     use FakerTrait;
 
-    public function testShipment()
+    public function testShipment(): void
     {
         $shipmentItem = new Item();
         $shipmentItem->setCustomerReference('Hello');
@@ -43,10 +44,19 @@ class ShipmentSerializerTest extends TestCase
         $addressTo->setCountryCode($this->getFaker()->countryCode);
         $shipment->setShipToAddress($addressTo);
 
-        // Set Dispactch
+        // Set Dispatch
         $dispatch = new DispatchInstruction();
         $dispatch->setDate($this->getFaker()->dateTime());
+        $dispatch->setEoriNumber($this->getFaker()->randomNumber(9));
+        $dispatch->setVatNumber($this->getFaker()->randomNumber(9));
         $shipment->setDispatch($dispatch);
+
+        // Set Delivery
+        $delivery = new DeliveryInstruction();
+        $delivery->setDate($this->getFaker()->dateTime());
+        $delivery->setEoriNumber($this->getFaker()->randomNumber(9));
+        $delivery->setVatNumber($this->getFaker()->randomNumber(9));
+        $shipment->setDelivery($delivery);
 
         $serializedShipment = (new ShipmentSerializer())->serialize($shipment);
 
@@ -57,6 +67,13 @@ class ShipmentSerializerTest extends TestCase
 
         self::assertArrayHasKey('dispatch', $serializedShipment);
         self::assertArrayHasKey('date', $serializedShipment['dispatch']);
+        self::assertArrayHasKey('eoriNumber', $serializedShipment['dispatch']);
+        self::assertArrayHasKey('vatNumber', $serializedShipment['dispatch']);
+
+        self::assertArrayHasKey('delivery', $serializedShipment);
+        self::assertArrayHasKey('date', $serializedShipment['delivery']);
+        self::assertArrayHasKey('eoriNumber', $serializedShipment['delivery']);
+        self::assertArrayHasKey('vatNumber', $serializedShipment['delivery']);
 
         self::assertArrayHasKey('shipTo', $serializedShipment);
         self::assertArrayHasKey('contact', $serializedShipment['shipTo']);
